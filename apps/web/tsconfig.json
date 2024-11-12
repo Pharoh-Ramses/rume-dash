@@ -3,17 +3,26 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"],
-      "~/config/*": ["./config/*"],
-      "~/components/*": ["./components/*"],
-      "~/lib/*": ["./lib/*"]
+      "~/*": [
+        "./app/*"
+      ],
+      "~/config/*": [
+        "./config/*"
+      ],
+      "~/components/*": [
+        "./components/*"
+      ],
+      "~/lib/*": [
+        "./lib/*"
+      ]
     },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json"
+    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
+    "jsx": "preserve"
   },
   "include": [
     "next-env.d.ts",
@@ -26,5 +35,8 @@
     "lib/**/*.ts",
     "app"
   ],
-  "exclude": ["node_modules", ".next"]
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
 }

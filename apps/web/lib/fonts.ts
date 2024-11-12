@@ -1,15 +1,16 @@
-import { Inter as SansFont } from 'next/font/google';
+import { Quicksand } from 'next/font/google';
 
 /**
  * @sans
  * @description Define here the sans font.
- * By default, it uses the Inter font from Google Fonts.
+ * Using Quicksand from Google Fonts.
  */
-const sans = SansFont({
+const sans = Quicksand({
   subsets: ['latin'],
   variable: '--font-sans',
   fallback: ['system-ui', 'Helvetica Neue', 'Helvetica', 'Arial'],
   preload: true,
+  // Quicksand available weights are 300, 400, 500, 600, 700
   weight: ['300', '400', '500', '600', '700'],
 });
 
