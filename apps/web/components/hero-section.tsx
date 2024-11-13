@@ -14,7 +14,7 @@ export default function HeroSection() {
                             Welcome Jet setters, your next trip starts here!
                         </h1>
                         <p className="text-xl text-gray-500">
-                            Start planning your next trip.
+                            Start planning your next trip today.
                         </p>
                     </div>
 
