@@ -1,18 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 
 export default function HeroSection() {
-    const [email, setEmail] = useState('')
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Handle form submission here
-        console.log('Submitted email:', email)
-        // Reset form
-        setEmail('')
-    }
 
     return (
         <section className="relative min-h-screen flex items-center overflow:hidden">

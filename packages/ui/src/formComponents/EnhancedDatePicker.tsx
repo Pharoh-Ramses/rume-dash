@@ -16,34 +16,38 @@ import {
     SelectValue,
 } from '~/ui/select';
 
-const EnhancedDatePicker = ({
-                                //@ts-ignore
-                                value,
-                                //@ts-ignore
-                                onChange,
-                                disabled = false,
-                                placeholder = 'Pick a date',
-                                //@ts-ignore
-                                className,
-                            }) => {
+interface EnhancedDatePickerProps {
+    value: Date | undefined;
+    onChange: (date: Date) => void;
+    disabled?: boolean;
+    placeholder?: string;
+    className?: string;
+}
+
+const EnhancedDatePicker: React.FC<EnhancedDatePickerProps> = ({
+                                                                   value,
+                                                                   onChange,
+                                                                   disabled = false,
+                                                                   placeholder = 'Pick a date',
+                                                                   className,
+                                                               }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(value);
-    const [selectedYear, setSelectedYear] = useState(
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
+    const [selectedYear, setSelectedYear] = useState<string>(
         value ? value.getFullYear().toString() : new Date().getFullYear().toString()
     );
-    const [selectedMonth, setSelectedMonth] = useState(
+    const [selectedMonth, setSelectedMonth] = useState<string>(
         value
             ? (value.getMonth() + 1).toString()
             : (new Date().getMonth() + 1).toString()
     );
-    const [selectedDay, setSelectedDay] = useState(
+    const [selectedDay, setSelectedDay] = useState<string>(
         value ? value.getDate().toString() : new Date().getDate().toString()
     );
 
     // Generate years (100 years in the past)
     const currentYear = new Date().getFullYear();
-    //@ts-ignore
-    const years = Array.from({ length: 120 }, (_, i) =>
+    const years: string[] = Array.from({ length: 120 }, (_, i) =>
         (currentYear - 119 + i).toString()
     );
 
@@ -64,10 +68,10 @@ const EnhancedDatePicker = ({
     ];
 
     // Generate days in a month
-    //@ts-ignore
+    const daysInMonth = (month: number, year: number): number =>
+        new Date(year, month, 0).getDate();
 
-    const daysInMonth = (month, year) => new Date(year, month, 0).getDate();
-    const days = Array.from(
+    const days: string[] = Array.from(
         { length: daysInMonth(parseInt(selectedMonth), parseInt(selectedYear)) },
         (_, i) => (i + 1).toString()
     );
@@ -80,8 +84,8 @@ const EnhancedDatePicker = ({
             setSelectedDay(value.getDate().toString());
         }
     }, [value]);
-    //@ts-ignore
-    const updateDate = (newYear, newMonth, newDay) => {
+
+    const updateDate = (newYear: string, newMonth: string, newDay: string) => {
         const newDate = new Date(
             parseInt(newYear),
             parseInt(newMonth) - 1,
@@ -90,21 +94,21 @@ const EnhancedDatePicker = ({
         setSelectedDate(newDate);
         onChange(newDate);
     };
-    //@ts-ignore
 
-    const handleYearChange = (year) => {
+    const handleYearChange = (year: string) => {
         setSelectedYear(year);
         updateDate(year, selectedMonth, selectedDay);
     };
-    //@ts-ignore
 
-    const handleMonthChange = (month) => {
+    const handleMonthChange = (month: string) => {
+        const maxDays = daysInMonth(parseInt(month), parseInt(selectedYear));
+        const newDay = Math.min(parseInt(selectedDay), maxDays).toString();
         setSelectedMonth(month);
-        updateDate(selectedYear, month, selectedDay);
+        setSelectedDay(newDay);
+        updateDate(selectedYear, month, newDay);
     };
-    //@ts-ignore
 
-    const handleDayChange = (day) => {
+    const handleDayChange = (day: string) => {
         setSelectedDay(day);
         updateDate(selectedYear, selectedMonth, day);
     };

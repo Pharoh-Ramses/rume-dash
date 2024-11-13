@@ -5,18 +5,28 @@ import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react'
 import { Button } from "@kit/ui/button"
 import { Card, CardContent } from "@kit/ui/card"
-import {Pill} from "@kit/ui/marketing"
-const products = [
-    { id: 1, name: "Azithromycin (Traveler’s Diarrhea)", price: 24.99, rating: 4.5, image: "/images/treatment-bottle.webp?height=200&width=200" },
+import { Pill } from "@kit/ui/marketing"
+
+interface Product {
+    id: number;
+    name: string;
+    price: number;
+    rating: number;
+    image: string;
+}
+
+const products: Product[] = [
+    { id: 1, name: "Azithromycin (Traveler's Diarrhea)", price: 24.99, rating: 4.5, image: "/images/treatment-bottle.webp?height=200&width=200" },
     { id: 2, name: "Cefixme (STI Prevention Chlamydia)", price: 24.99, rating: 4.7, image: "/images/treatment-bottle.webp?height=200&width=200" },
     { id: 3, name: "Cefixme (STI Prevention Gonorrhea)", price: 121.00, rating: 4.8, image: "/images/treatment-bottle.webp?height=200&width=200" },
     { id: 4, name: "Ciprofloxacin" + "\n(Pink Eye)", price: 10.99, rating: 4.6, image: "/images/treatment-bottle.webp?height=200&width=200" },
-    { id: 5, name: "Ciprofloxacin Hydrochloride (Swimmer’s Ear)", price: 10.99, rating: 4.9, image: "/images/treatment-bottle.webp?height=200&width=200" },
+    { id: 5, name: "Ciprofloxacin Hydrochloride (Swimmer's Ear)", price: 10.99, rating: 4.9, image: "/images/treatment-bottle.webp?height=200&width=200" },
     { id: 6, name: "Deep Vein Thrombosis & Pulmonary Embolism", price: 20.95, rating: 4.4, image: "/images/treatment-bottle.webp?height=200&width=200" },
 ]
 
 export default function PopularProductsSlider() {
-    const [scrollPosition, setScrollPosition] = useState(0)
+    const [scrollPosition, setScrollPosition] = useState<number>(0)
+    const [maxScroll, setMaxScroll] = useState<number>(0)
     const sliderRef = useRef<HTMLDivElement>(null)
 
     const handleScroll = (direction: 'left' | 'right') => {
@@ -32,17 +42,32 @@ export default function PopularProductsSlider() {
         if (slider) {
             const handleScrollEvent = () => {
                 setScrollPosition(slider.scrollLeft)
+                setMaxScroll(slider.scrollWidth - slider.clientWidth)
             }
+
+            // Set initial maxScroll value
+            setMaxScroll(slider.scrollWidth - slider.clientWidth)
+
             slider.addEventListener('scroll', handleScrollEvent)
-            return () => slider.removeEventListener('scroll', handleScrollEvent)
+
+            // Update maxScroll on window resize
+            const handleResize = () => {
+                setMaxScroll(slider.scrollWidth - slider.clientWidth)
+            }
+            window.addEventListener('resize', handleResize)
+
+            return () => {
+                slider.removeEventListener('scroll', handleScrollEvent)
+                window.removeEventListener('resize', handleResize)
+            }
         }
     }, [])
 
     return (
         <section className="py-16 bg-gray-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <Pill label={"Sale"} >
-                    <span>Get them while they're hot!</span>
+                <Pill label="Sale">
+                    <span>Get them while they are hot!</span>
                 </Pill>
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-8">
                     Popular Treatments
@@ -60,9 +85,9 @@ export default function PopularProductsSlider() {
                                         <Image
                                             src={product.image}
                                             alt={product.name}
-                                            layout="fill"
-                                            objectFit="cover"
-                                            className="rounded-md"
+                                            fill
+                                            className="rounded-md object-cover"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                         />
                                     </div>
                                     <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
@@ -92,8 +117,7 @@ export default function PopularProductsSlider() {
                         size="icon"
                         className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md"
                         onClick={() => handleScroll('right')}
-                        // @ts-ignore
-                        disabled={scrollPosition === sliderRef.current?.scrollWidth - sliderRef.current?.clientWidth}
+                        disabled={scrollPosition >= maxScroll}
                     >
                         <ChevronRight className="h-4 w-4" />
                         <span className="sr-only">Scroll right</span>

@@ -9,7 +9,7 @@ import {
     FormMessage,
 } from '~/ui/form';
 import { Input } from '~/ui/input';
-import { Control } from 'react-hook-form';
+import { Control, ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -24,35 +24,39 @@ import { Checkbox } from '~/ui/checkbox';
 import { E164Number } from 'libphonenumber-js/core';
 import EnhancedDatePicker from './EnhancedDatePicker';
 
-interface CustomProps {
-    control: Control<any>;
+interface CustomProps<TFieldValues extends FieldValues> {
+    control: Control<TFieldValues>;
     fieldType: FormFieldType;
-    name: string;
+    name: Path<TFieldValues>;
     label?: string;
     placeholder?: string;
     iconSrc?: string;
     iconAlt?: string;
     disabled?: boolean;
-    dateFormat?: string;
-    showTimeSelect?: boolean;
     children?: React.ReactNode;
-    renderSkeleton?: (field: any) => React.ReactNode;
+    renderSkeleton?: (field: ControllerRenderProps<TFieldValues, Path<TFieldValues>>) => React.ReactNode;
 }
 
-const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
+interface RenderFieldProps<TFieldValues extends FieldValues> {
+    field: ControllerRenderProps<TFieldValues, Path<TFieldValues>>;
+    props: CustomProps<TFieldValues>;
+}
+
+const RenderField = <TFieldValues extends FieldValues>({
+                                                           field,
+                                                           props
+                                                       }: RenderFieldProps<TFieldValues>) => {
     const {
         fieldType,
         iconSrc,
         iconAlt,
         placeholder,
-        showTimeSelect,
-        dateFormat,
         control,
         name,
-        label,
         disabled,
         renderSkeleton,
     } = props;
+
     switch (fieldType) {
         case FormFieldType.INPUT:
             return (
@@ -62,7 +66,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                             src={iconSrc}
                             height={24}
                             width={24}
-                            alt={iconAlt || 'icon'}
+                            alt={iconAlt ?? 'icon'}
                             className="ml-2"
                         />
                     )}
@@ -75,6 +79,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                     </FormControl>
                 </div>
             );
+
         case FormFieldType.PHONE_INPUT:
             return (
                 <FormControl>
@@ -90,17 +95,18 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                     />
                 </FormControl>
             );
+
         case FormFieldType.DATE_PICKER:
             return (
                 <FormField
                     control={control}
                     name={name}
-                    render={({ field }) => (
+                    render={({ field: dateField }) => (
                         <FormItem className="w-full">
                             <FormControl>
                                 <EnhancedDatePicker
-                                    value={field.value}
-                                    onChange={field.onChange}
+                                    value={dateField.value}
+                                    onChange={dateField.onChange}
                                     disabled={disabled}
                                     placeholder={placeholder}
                                     className="w-full"
@@ -111,13 +117,17 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                     )}
                 />
             );
+
         case FormFieldType.SKELETON:
             return renderSkeleton ? renderSkeleton(field) : null;
 
         case FormFieldType.SELECT:
             return (
                 <FormControl>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value as string}
+                    >
                         <FormControl>
                             <SelectTrigger className="shad-select-trigger">
                                 <SelectValue placeholder={placeholder} />
@@ -129,6 +139,7 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                     </Select>
                 </FormControl>
             );
+
         case FormFieldType.TEXTAREA:
             return (
                 <FormControl>
@@ -136,33 +147,38 @@ const RenderField = ({ field, props }: { field: any; props: CustomProps }) => {
                         placeholder={placeholder}
                         {...field}
                         className="shad-textArea"
-                        disabled={props.disabled}
+                        disabled={disabled}
                     />
                 </FormControl>
             );
+
         case FormFieldType.CHECKBOX:
             return (
                 <FormControl>
                     <div className="flex items-center gap-2">
                         <Checkbox
-                            id={props.name}
-                            checked={field.value}
+                            id={name}
+                            checked={field.value as boolean}
                             onCheckedChange={field.onChange}
                             className="text-dark-700"
                         />
-                        <label htmlFor={props.name} className="cursor-pointer">
+                        <label htmlFor={name} className="cursor-pointer">
                             {props.label}
                         </label>
                     </div>
                 </FormControl>
             );
+
         default:
-            break;
+            return null;
     }
 };
 
-const CustomFormField = (props: CustomProps) => {
+const CustomFormField = <TFieldValues extends FieldValues>(
+    props: CustomProps<TFieldValues>
+) => {
     const { control, fieldType, name, label } = props;
+
     return (
         <FormField
             control={control}
@@ -173,7 +189,6 @@ const CustomFormField = (props: CustomProps) => {
                         <FormLabel>{label}</FormLabel>
                     )}
                     <RenderField field={field} props={props} />
-
                     <FormMessage className="shad-error" />
                 </FormItem>
             )}
