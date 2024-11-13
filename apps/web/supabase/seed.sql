@@ -259,3 +259,39 @@ SELECT pg_catalog.setval('"public"."role_permissions_id_seq"', 7, true);
 --
 
 SELECT pg_catalog.setval('"supabase_functions"."hooks_id_seq"', 19, true);
+
+-- Insert sample tickets
+INSERT INTO public.tickets (account_id, status, title, priority, category, resolution, customer_email, updated_at)
+VALUES
+  ('5deaa894-2094-4da3-b4fd-1fada0809d1c', 'in_progress', 'Cannot access account', 'high', 'Login Issues', NULL, 'john.doe@example.com', NOW() + INTERVAL '1 day'),
+  ('5deaa894-2094-4da3-b4fd-1fada0809d1c', 'open', 'Billing discrepancy', 'medium', 'Billing', NULL, 'jane.smith@example.com', NOW() + INTERVAL '2 days'),
+  ('5deaa894-2094-4da3-b4fd-1fada0809d1c', 'open', 'Feature request: Dark mode', 'low', 'Feature Request', NULL, 'alex.johnson@example.com', NOW() + INTERVAL '5 days'),
+  ('5deaa894-2094-4da3-b4fd-1fada0809d1c', 'resolved', 'App crashes on startup', 'medium', 'Bug', 'Updated app to latest version', 'sarah.lee@example.com', NOW() - INTERVAL '1 hour');
+
+-- Now, let's add some messages for these tickets
+WITH ticket_ids AS (
+  SELECT id, title FROM public.tickets WHERE title IN (
+    'Cannot access account',
+    'Billing discrepancy',
+    'Feature request: Dark mode',
+    'App crashes on startup'
+  )
+)
+INSERT INTO public.messages (ticket_id, author, content, attachment_url)
+SELECT
+  t.id,
+  m.author,
+  m.content,
+  m.attachment_url
+FROM ticket_ids t
+JOIN (
+  VALUES
+    ('Cannot access account', 'customer'::public.message_author, 'I cannot log into my account. It says my password is incorrect, but I''m sure it''s right.', NULL),
+    ('Cannot access account', 'support'::public.message_author, 'I''m sorry to hear that. Let''s try resetting your password. I''ve sent a password reset link to your email.', NULL),
+    ('Billing discrepancy', 'customer'::public.message_author, 'My last invoice seems to be higher than usual. Can you please check?', NULL),
+    ('Billing discrepancy', 'support'::public.message_author, 'Certainly, I''ve looked into your account and noticed that you upgraded your plan last month. This explains the increase. Please confirm if you remember making this change.', NULL),
+    ('Feature request: Dark mode', 'customer'::public.message_author, 'It would be great if you could add a dark mode to the app. It''s hard on the eyes at night.', NULL),
+    ('App crashes on startup', 'customer'::public.message_author, 'Every time I try to open the app, it crashes immediately. I''m using an iPhone 12.', 'https://example.com/attachments/crash_log.txt'),
+    ('App crashes on startup', 'support'::public.message_author, 'Thank you for reporting this and providing the crash log. We''ve identified the issue and it''s been fixed in our latest update. Please update your app and let us know if the problem persists.', NULL),
+    ('App crashes on startup', 'customer'::public.message_author, 'I''ve updated the app and it''s working perfectly now. Thank you!', NULL)
+) AS m(title, author, content, attachment_url) ON t.title = m.title;
