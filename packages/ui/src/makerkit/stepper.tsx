@@ -184,7 +184,7 @@ function StepDivider({
 }>) {
   const spanClassName = cn('min-w-max text-sm font-medium', {
     ['hidden text-muted-foreground sm:flex']: !selected,
-    ['text-secondary-foreground']: selected || complete,
+    ['text-primary']: selected || complete,
     ['font-medium']: selected,
   });
 

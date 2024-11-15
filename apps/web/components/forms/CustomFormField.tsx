@@ -1,28 +1,26 @@
 'use client';
 import Image from 'next/image';
-import { FormFieldType } from './FormTypes';
+import { FormFieldType } from '~/components/forms/FormTypes';
 import {
     FormControl,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
-} from '~/ui/form';
-import { Input } from '~/ui/input';
+} from '@kit/ui/form';
+import { Input } from '@kit/ui/input';
 import { Control, ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
-import 'react-datepicker/dist/react-datepicker.css';
 import {
     Select,
     SelectContent,
     SelectTrigger,
     SelectValue,
-} from '~/ui/select';
-import { Textarea } from '~/ui/textarea';
-import { Checkbox } from '~/ui/checkbox';
+} from '@kit/ui/select';
+import { Textarea } from '@kit/ui/textarea';
+import { Checkbox } from '@kit/ui/checkbox';
 import { E164Number } from 'libphonenumber-js/core';
-import EnhancedDatePicker from './EnhancedDatePicker';
+import EnhancedDatePicker from '~/components/forms/EnhancedDatePicker';
 
 interface CustomProps<TFieldValues extends FieldValues> {
     control: Control<TFieldValues>;
@@ -60,7 +58,7 @@ const RenderField = <TFieldValues extends FieldValues>({
     switch (fieldType) {
         case FormFieldType.INPUT:
             return (
-                <div className="flex rounded-md border dark:border-dark-500 dark:bg-dark-400 light:border-light-100 light:bg-light-200">
+                <div className="flex rounded-md border bg-white">
                     {iconSrc && (
                         <Image
                             src={iconSrc}
@@ -109,7 +107,7 @@ const RenderField = <TFieldValues extends FieldValues>({
                                     onChange={dateField.onChange}
                                     disabled={disabled}
                                     placeholder={placeholder}
-                                    className="w-full"
+                                    className="w-full "
                                 />
                             </FormControl>
                             <FormMessage />
@@ -129,7 +127,7 @@ const RenderField = <TFieldValues extends FieldValues>({
                         defaultValue={field.value as string}
                     >
                         <FormControl>
-                            <SelectTrigger className="shad-select-trigger">
+                            <SelectTrigger className="shad-select-trigger bg-white">
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>
@@ -146,7 +144,7 @@ const RenderField = <TFieldValues extends FieldValues>({
                     <Textarea
                         placeholder={placeholder}
                         {...field}
-                        className="shad-textArea"
+                        className="shad-textArea bg-white"
                         disabled={disabled}
                     />
                 </FormControl>
@@ -155,7 +153,7 @@ const RenderField = <TFieldValues extends FieldValues>({
         case FormFieldType.CHECKBOX:
             return (
                 <FormControl>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center bg-white gap-2">
                         <Checkbox
                             id={name}
                             checked={field.value as boolean}

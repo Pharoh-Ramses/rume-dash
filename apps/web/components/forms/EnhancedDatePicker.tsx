@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Button } from '~/ui/button';
+import { Button } from '@kit/ui/button';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from '~/ui/popover';
-import { ScrollArea } from '~/ui/scroll-area';
-import { cn } from '~/lib/utils/cn';
+} from '@kit/ui/popover';
+import { ScrollArea } from '@kit/ui/scroll-area';
+import { cn } from '@kit/ui/utils';
 import { CalendarIcon } from 'lucide-react';
 import {
     Select,
@@ -14,7 +14,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '~/ui/select';
+} from '@kit/ui/select';
 
 interface EnhancedDatePickerProps {
     value: Date | undefined;
